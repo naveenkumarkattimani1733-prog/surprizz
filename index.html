@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Surprizz 🎁 — Create Magical Surprises</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pink:#ff6b9d;--purple:#c44dff;--gold:#ffd93d;--green:#6bcb77;--blue:#4d96ff;
+  --bg:#0d0d1a;--card:rgba(255,255,255,0.05);--border:rgba(255,150,180,0.2);
+  --text:#ffd6e7;--sub:rgba(255,200,220,0.6);
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15;animation:float 8s ease-in-out infinite}
+.orb1{width:400px;height:400px;background:var(--pink);top:-100px;left:-100px}
+.orb2{width:300px;height:300px;background:var(--purple);bottom:-50px;right:-50px;animation-delay:3s}
+.orb3{width:250px;height:250px;background:var(--gold);top:40%;left:50%;animation-delay:5s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-30px)}}
+.page{position:relative;z-index:1;display:none}
+.page.active{display:block}
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;
+  border-bottom:1px solid var(--border);backdrop-filter:blur(20px);
+  background:rgba(13,13,26,0.8);position:sticky;top:0;z-index:100}
+.logo{font-size:1.4rem;font-weight:800;background:linear-gradient(90deg,var(--pink),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer}
+.nav-btn{padding:0.5rem 1.2rem;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--text);cursor:pointer;font-size:0.85rem;transition:all 0.2s}
+.nav-btn:hover{background:var(--card);border-color:var(--pink)}
+.nav-user{display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--sub)}
+.nav-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));
+  display:flex;align-items:center;justify-content:center;font-size:0.9rem}
+/* HERO */
+.hero{text-align:center;padding:4rem 1rem 2rem}
+.hero h1{font-size:clamp(2rem,7vw,4rem);font-weight:900;line-height:1.1;margin-bottom:1rem}
+.grad{background:linear-gradient(135deg,var(--pink),var(--gold),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--sub);font-size:1.05rem;max-width:500px;margin:0 auto 2rem;line-height:1.7}
+.stats-row{display:flex;justify-content:center;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
+.stat-num{font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,var(--pink),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:0.72rem;color:var(--sub)}
+/* MODE */
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:800px;margin:0 auto 2rem;padding:0 1rem}
+.mode-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.5rem 1rem;
+  text-align:center;cursor:pointer;transition:all 0.3s}
+.mode-card:hover{transform:translateY(-4px);border-color:var(--pink)}
+.mode-icon{font-size:2.5rem;margin-bottom:0.6rem}
+.mode-card h2{font-size:1.1rem;margin-bottom:0.4rem}
+.mode-card p{color:var(--sub);font-size:0.8rem;line-height:1.4}
+.badge{display:inline-block;padding:0.2rem 0.6rem;border-radius:10px;font-size:0.7rem;font-weight:700;margin-top:0.5rem}
+.badge.free{background:rgba(107,203,119,0.2);color:var(--green);border:1px solid var(--green)}
+.badge.pro{background:rgba(196,77,255,0.2);color:var(--purple);border:1px solid var(--purple)}
+.badge.ai{background:rgba(255,217,61,0.2);color:var(--gold);border:1px solid var(--gold)}
+/* OCCASIONS */
+.section-tabs{display:flex;justify-content:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:2rem;padding:0 1rem}
+.stab{padding:0.6rem 1.4rem;border-radius:25px;border:1px solid var(--border);background:transparent;
+  color:var(--sub);cursor:pointer;font-size:0.88rem;font-family:inherit;transition:all 0.2s}
+.stab.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border-color:transparent}
+.occasion-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.8rem;
+  max-width:800px;margin:0 auto;padding:0 1rem}
+.occ-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:1rem 0.6rem;text-align:center;cursor:pointer;transition:all 0.25s}
+.occ-card:hover{transform:translateY(-3px);border-color:var(--pink);background:rgba(255,107,157,0.08)}
+.occ-icon{font-size:2rem;margin-bottom:0.4rem}
+.occ-card h3{font-size:0.82rem;font-weight:600}
+.occ-card p{font-size:0.68rem;color:var(--sub);margin-top:0.2rem}
+/* AUTH */
+.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(10px)}
+.auth-card{background:#0d0d1a;border:1px solid var(--border);border-radius:20px;
+  padding:2rem;max-width:400px;width:100%;text-align:center}
+.auth-card h2{font-size:1.3rem;margin-bottom:0.3rem}
+.auth-card p{color:var(--sub);font-size:0.85rem;margin-bottom:1.5rem}
+.auth-btn{width:100%;padding:0.75rem;border-radius:12px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.05);color:var(--text);cursor:pointer;font-size:0.9rem;
+  font-family:inherit;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.6rem}
+.auth-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--pink)}
+.auth-divider{display:flex;align-items:center;gap:0.5rem;margin:0.8rem 0;color:var(--sub);font-size:0.78rem}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-input{width:100%;padding:0.7rem 1rem;border-radius:10px;border:1px solid rgba(255,150,180,0.3);
+  background:rgba(255,255,255,0.06);color:#ffeef5;font-size:0.92rem;outline:none;
+  font-family:inherit;margin-bottom:0.6rem;transition:border-color 0.2s}
+.auth-input:focus{border-color:var(--pink)}
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:600px;margin:0 auto;padding:0 1rem 3rem}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem;text-align:center}
+.price-card.popular{border-color:var(--pink);background:rgba(255,107,157,0.05)}
+.price-card h3{font-size:1.1rem;margin-bottom:0.3rem}
+.price-card .price{font-size:2rem;font-weight:800;margin:0.5rem 0;color:var(--pink)}
+.price-card .price span{font-size:0.85rem;color:var(--sub);font-weight:400}
+.price-features{list-style:none;text-align:left;margin:0.8rem 0 1rem;font-size:0.82rem}
+.price-features li{padding:0.3rem 0;color:var(--sub)}
+.price-features li::before{content:'✅ ';margin-right:0.3rem}
+/* SHARE MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(10px)}
+.modal-card{background:#0d0d1a;border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:420px;width:100%}
+/* CREATOR */
+.creator-wrap{max-width:720px;margin:0 auto;padding:1.5rem 1rem 4rem}
+.creator-header{text-align:center;padding:1rem 0}
+.steps-bar{display:flex;justify-content:center;margin-bottom:1.5rem}
+.step-item{flex:1;text-align:center;position:relative;max-width:100px}
+.step-dot{width:26px;height:26px;border-radius:50%;margin:0 auto 0.2rem;display:flex;
+  align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;
+  position:relative;z-index:1;transition:all 0.3s;
+  background:rgba(255,255,255,0.08);color:rgba(255,200,220,0.3);border:2px solid transparent}
+.step-dot.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border-color:var(--gold)}
+.step-dot.done{background:linear-gradient(135deg,var(--green),var(--blue));color:#fff}
+.step-label{font-size:0.62rem;color:rgba(255,200,220,0.4)}
+.step-label.active{color:var(--text)}
+.step-line{position:absolute;top:13px;left:50%;right:-50%;height:2px;z-index:0;background:rgba(255,255,255,0.08)}
+.step-line.done{background:linear-gradient(90deg,var(--pink),var(--purple))}
+.card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;padding:1.6rem}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:0.73rem;color:var(--sub);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:0.3rem}
+.field input,.field textarea,.field select{width:100%;padding:0.7rem 1rem;border-radius:10px;
+  border:1px solid rgba(255,150,180,0.3);background:rgba(255,255,255,0.06);
+  color:#ffeef5;font-size:0.92rem;outline:none;font-family:inherit;transition:border-color 0.2s}
+.field input:focus,.field textarea:focus{border-color:var(--pink)}
+.field textarea{min-height:75px;resize:vertical}
+.field select option{background:#1a0533}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:0.6rem;margin-top:0.4rem}
+.photo-slot{aspect-ratio:1;border-radius:10px;border:2px dashed rgba(255,107,157,0.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;overflow:hidden;position:relative;background:rgba(255,107,157,0.04)}
+.photo-slot:hover{border-color:var(--pink)}
+.photo-slot img{width:100%;height:100%;object-fit:cover}
+.photo-slot .remove-photo{position:absolute;top:3px;right:3px;background:rgba(0,0,0,0.7);
+  border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:0.7rem}
+.slide-tabs{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.8rem}
+.slide-tab{padding:0.3rem 0.7rem;border-radius:20px;border:1px solid rgba(255,150,180,0.25);
+  background:transparent;color:rgba(255,200,220,0.5);cursor:pointer;font-size:0.76rem;font-family:inherit}
+.slide-tab.active{border-color:var(--pink);background:rgba(255,107,157,0.15);color:var(--pink)}
+.btn-row{display:flex;justify-content:space-between;margin-top:1.4rem;gap:0.6rem;flex-wrap:wrap}
+.btn{padding:0.75rem 1.6rem;border-radius:50px;cursor:pointer;font-size:0.88rem;
+  font-weight:600;font-family:inherit;transition:all 0.2s;border:none}
+.btn-primary{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,107,157,0.4)}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-success{background:linear-gradient(135deg,var(--green),var(--blue));color:#fff}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--pink));color:#1a0533}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(75px,1fr));gap:0.5rem;margin-top:0.4rem}
+.theme-opt{border-radius:10px;height:45px;cursor:pointer;border:2px solid transparent;transition:all 0.2s;position:relative}
+.theme-opt.selected{border-color:#fff;transform:scale(1.05)}
+.theme-opt span{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.8)}
+.frame-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(75px,1fr));gap:0.5rem;margin-top:0.4rem}
+.frame-opt{border-radius:10px;height:55px;cursor:pointer;border:2px solid var(--border);
+  transition:all 0.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:1.4rem;background:rgba(255,255,255,0.03)}
+.frame-opt.selected{border-color:var(--pink);background:rgba(255,107,157,0.1)}
+.music-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.4rem}
+.music-opt{padding:0.6rem;border-radius:10px;border:1px solid var(--border);cursor:pointer;
+  transition:all 0.2s;background:rgba(255,255,255,0.03);display:flex;align-items:center;gap:0.5rem}
+.music-opt.selected{border-color:var(--pink);background:rgba(255,107,157,0.08)}
+.ai-wrap{background:rgba(255,217,61,0.05);border:1px solid rgba(255,217,61,0.2);border-radius:14px;padding:1rem;margin-bottom:0.8rem}
+.ai-wrap h3{color:var(--gold);font-size:0.88rem;margin-bottom:0.6rem}
+.ai-chip{display:inline-block;padding:0.28rem 0.75rem;border-radius:20px;border:1px solid rgba(255,217,61,0.3);
+  background:rgba(255,217,61,0.08);color:var(--gold);font-size:0.76rem;cursor:pointer;margin:0.2rem;transition:all 0.2s}
+.ai-chip:hover{background:rgba(255,217,61,0.2)}
+.q-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:0.8rem;margin-bottom:0.6rem}
+.q-yesno{display:flex;gap:0.6rem;margin-top:0.5rem}
+.q-yesno button{flex:1;padding:0.5rem;border-radius:10px;cursor:pointer;font-family:inherit;font-size:0.85rem;font-weight:600;border:1px solid}
+.btn-yes{background:rgba(107,203,119,0.1);color:var(--green);border-color:var(--green)!important}
+.btn-yes:hover,.btn-yes.sel{background:var(--green)!important;color:#fff!important}
+.btn-no{background:rgba(255,107,157,0.1);color:var(--pink);border-color:var(--pink)!important}
+.btn-no:hover,.btn-no.sel{background:var(--pink)!important;color:#fff!important}
+/* VIEWER */
+#viewer-page{min-height:100vh}
+.vlock{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem;flex-direction:column;gap:1rem}
+.vlock-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,150,200,0.2);
+  border-radius:20px;padding:2rem 1.8rem;max-width:360px;width:100%;text-align:center}
+.pw-input{width:100%;padding:0.75rem;border-radius:10px;border:1px solid rgba(255,150,180,0.4);
+  background:rgba(255,255,255,0.08);color:#fff;font-size:1rem;outline:none;
+  text-align:center;letter-spacing:4px;font-family:inherit}
+.err{color:#ff7eb3;font-size:0.82rem;margin-top:0.3rem}
+.progress-bar{height:3px;background:rgba(255,255,255,0.1)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width 0.4s}
+.slide-view{min-height:100vh;display:flex;flex-direction:column}
+.slide-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;text-align:center}
+.slide-photos{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:1.2rem;max-width:600px}
+.slide-photo-wrap{border-radius:12px;overflow:hidden;background:linear-gradient(135deg,var(--pink),var(--gold),var(--blue));padding:3px}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
+.conf-piece{position:absolute;top:-10px;animation:conffall linear forwards}
+@keyframes conffall{to{top:110vh;opacity:0;transform:rotate(720deg)}}
+.creator-attr{text-align:center;padding:0.6rem;font-size:0.72rem;color:var(--sub);border-top:1px solid var(--border);margin-top:0.8rem}
+/* DASH */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;
+  max-width:900px;margin:0 auto;padding:0 1rem 4rem}
+.dash-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;transition:all 0.2s}
+.dash-card:hover{transform:translateY(-3px);border-color:var(--pink)}
+.dash-actions{display:flex;gap:0.4rem;margin-top:0.8rem;flex-wrap:wrap}
+.dash-btn{padding:0.3rem 0.7rem;border-radius:20px;font-size:0.73rem;cursor:pointer;font-family:inherit;border:none}
+/* SHARE BOX */
+.share-url-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,150,180,0.25);
+  border-radius:10px;padding:0.8rem;font-size:0.8rem;color:rgba(255,200,220,0.75);
+  word-break:break-all;text-align:left;margin-bottom:0.8rem;font-family:monospace}
+/* THEMES */
+.theme-love{background:linear-gradient(160deg,#1a0010,#3d0030,#1a0020)}
+.theme-birthday{background:linear-gradient(160deg,#0d0d1a,#1a0533,#0d1a2e)}
+.theme-anniversary{background:linear-gradient(160deg,#1a1000,#3d2500,#1a0a00)}
+.theme-friendship{background:linear-gradient(160deg,#001a0d,#003d1a,#001a10)}
+.theme-farewell{background:linear-gradient(160deg,#0d0d1a,#1a1a3d,#0d0d2e)}
+.theme-congrats{background:linear-gradient(160deg,#1a1a00,#3d3d00,#1a1500)}
+.theme-vehicle{background:linear-gradient(160deg,#001a1a,#003d3d,#001515)}
+.theme-other{background:linear-gradient(160deg,#0d0d1a,#1a0533,#0d1a2e)}
+.back-btn{background:none;border:1px solid var(--border);color:var(--sub);padding:0.4rem 1rem;
+  border-radius:20px;cursor:pointer;font-size:0.8rem;font-family:inherit;margin:0.5rem}
+footer{text-align:center;padding:2rem;color:var(--sub);font-size:0.8rem;border-top:1px solid var(--border)}
+footer a{color:var(--pink);text-decoration:none}
+.ad-slot{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);
+  border-radius:10px;padding:0.8rem;text-align:center;color:rgba(255,255,255,0.2);font-size:0.73rem;margin:0.8rem 0}
+.wish-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:0.8rem;margin-bottom:0.6rem}
+.wish-name{font-size:0.8rem;font-weight:700;color:var(--pink)}
+.collage-grid{display:grid;gap:4px;border-radius:12px;overflow:hidden}
+.collage-cell{background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;overflow:hidden;min-height:80px}
+.collage-cell img{width:100%;height:100%;object-fit:cover}
+.countdown-wrap{display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;margin:0.8rem 0}
+.cd-unit{text-align:center;background:rgba(255,255,255,0.05);border-radius:10px;padding:0.6rem 0.8rem;min-width:60px}
+.cd-num{font-size:1.8rem;font-weight:800;color:var(--pink)}
+.cd-label{font-size:0.6rem;color:var(--sub);text-transform:uppercase}
+/* PRO LOCK */
+.pro-lock{background:rgba(196,77,255,0.08);border:1px solid rgba(196,77,255,0.3);
+  border-radius:12px;padding:1rem;text-align:center;margin-bottom:0.8rem}
+.pro-lock p{color:var(--purple);font-size:0.85rem;margin-bottom:0.5rem}
+@media(max-width:500px){
+  .mode-grid{grid-template-columns:1fr 1fr}
+  .occasion-grid{grid-template-columns:repeat(3,1fr)}
+  .pricing-grid{grid-template-columns:1fr}
+  .music-grid{grid-template-columns:1fr}
+}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--pink);border-radius:3px}
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  background:rgba(30,10,50,0.95);border:1px solid var(--pink);border-radius:20px;
+  padding:0.7rem 1.4rem;font-size:0.85rem;z-index:300;display:none;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- ══ AUTH OVERLAY ══ -->
+<div class="auth-overlay" id="auth-overlay" style="display:none">
+  <div class="auth-card">
+    <div style="font-size:2.5rem;margin-bottom:0.5rem">🎁</div>
+    <h2>Join Surprizz</h2>
+    <p id="auth-sub">Login to create & share surprises!</p>
+
+    <!-- GOOGLE -->
+    <button class="auth-btn" onclick="loginGoogle()">
+      <span style="font-size:1.1rem">🔵</span> Continue with Google
+    </button>
+
+    <div class="auth-divider">or</div>
+
+    <!-- EMAIL -->
+    <div id="auth-email-section">
+      <input class="auth-input" id="auth-email" type="email" placeholder="Email address"/>
+      <input class="auth-input" id="auth-password" type="password" placeholder="Password (min 6 chars)"/>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:0.5rem" onclick="loginEmail()">
+        📧 Continue with Email
+      </button>
+    </div>
+
+    <div class="auth-divider">or</div>
+
+    <!-- PHONE -->
+    <div id="auth-phone-section">
+      <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem">
+        <input class="auth-input" id="auth-phone" type="tel" placeholder="+91 Phone number" style="margin:0;flex:1"/>
+        <button class="btn btn-primary" style="padding:0.7rem 1rem;flex-shrink:0" onclick="sendOTP()">Send OTP</button>
+      </div>
+      <div id="otp-section" style="display:none">
+        <input class="auth-input" id="auth-otp" type="number" placeholder="Enter OTP"/>
+        <button class="btn btn-primary" style="width:100%;margin-bottom:0.5rem" onclick="verifyOTP()">✅ Verify OTP</button>
+      </div>
+    </div>
+
+    <div id="auth-err" style="color:#ff7eb3;font-size:0.8rem;margin-top:0.4rem"></div>
+    <button onclick="closeAuth()" style="background:none;border:none;color:var(--sub);cursor:pointer;font-size:0.8rem;margin-top:0.8rem">
+      Maybe later →
+    </button>
+  </div>
+</div>
+
+<!-- ══ SHARE MODAL ══ -->
+<div class="modal-overlay" id="share-modal" style="display:none">
+  <div class="modal-card">
+    <div style="text-align:center;margin-bottom:1.2rem">
+      <div style="font-size:2.5rem">🎉</div>
+      <h3 style="font-size:1.2rem;margin:0.4rem 0;background:linear-gradient(90deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+        Surprise Ready to Share!</h3>
+      <p style="color:var(--sub);font-size:0.83rem">Share this link with your special person 💌</p>
+    </div>
+    <div class="share-url-box" id="share-url-display"></div>
+    <div style="display:flex;gap:0.6rem;margin-bottom:0.8rem;flex-wrap:wrap">
+      <button class="btn btn-primary" style="flex:1" onclick="copyShareLink()">📋 Copy Link</button>
+      <button class="btn btn-success" style="flex:1" onclick="shareWhatsApp()">💬 WhatsApp</button>
+    </div>
+    <div style="background:rgba(255,217,61,0.07);border:1px solid rgba(255,217,61,0.2);border-radius:10px;padding:0.8rem;font-size:0.82rem;color:rgba(255,220,150,0.8);margin-bottom:0.8rem">
+      🔐 Password: <b id="share-pw-display" style="color:var(--gold)"></b><br/>
+      <span style="font-size:0.75rem;opacity:0.7">Share the password separately for security!</span>
+    </div>
+    <button onclick="document.getElementById('share-modal').style.display='none'"
+      style="width:100%;background:none;border:1px solid var(--border);color:var(--sub);padding:0.6rem;border-radius:20px;cursor:pointer;font-family:inherit">
+      Close
+    </button>
+  </div>
+</div>
+
+<!-- ══ PAYMENT MODAL ══ -->
+<div class="modal-overlay" id="pay-modal" style="display:none">
+  <div class="modal-card" style="text-align:center">
+    <div style="font-size:2.5rem;margin-bottom:0.5rem">👑</div>
+    <h3 style="font-size:1.2rem;margin-bottom:0.3rem">Unlock Advanced</h3>
+    <p style="color:var(--sub);font-size:0.83rem;margin-bottom:1rem">Get full access for 6 months!</p>
+    <div style="font-size:2.5rem;font-weight:800;color:var(--pink);margin-bottom:0.3rem">₹30</div>
+    <p style="color:var(--sub);font-size:0.78rem;margin-bottom:1.2rem">6 months · All features · No hidden charges</p>
+    <ul style="list-style:none;text-align:left;margin-bottom:1.2rem;font-size:0.83rem">
+      ${['Multiple slides','Photo frames & stickers','Background music','Collage maker',
+        'Scratch card reveal','Countdown timer','Wish wall','Voice messages',
+        'Q&A surprise','AI messages','Unique shareable link'].map(f=>`<li style="padding:0.25rem 0;color:var(--sub)">✅ ${f}</li>`).join('')}
+    </ul>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:0.6rem" onclick="payRazorpay()">
+      💳 Pay ₹30 via Razorpay
+    </button>
+    <button onclick="document.getElementById('pay-modal').style.display='none'"
+      style="width:100%;background:none;border:1px solid var(--border);color:var(--sub);padding:0.6rem;border-radius:20px;cursor:pointer;font-family:inherit">
+      Maybe Later
+    </button>
+  </div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div id="home-page" class="page active">
+  <nav>
+    <div class="logo" onclick="showPage('home-page')">Surprizz 🎁</div>
+    <div style="display:flex;align-items:center;gap:0.5rem">
+      <div id="nav-user-area">
+        <button class="nav-btn" onclick="showAuth()">Login / Sign Up</button>
+      </div>
+      <button class="nav-btn" onclick="showPage('dashboard-page')">My Surprises</button>
+    </div>
+  </nav>
+  <div style="max-width:800px;margin:0.8rem auto;padding:0 1rem">
+    <div class="ad-slot">📢 Advertisement — Google AdSense (728x90)</div>
+  </div>
+  <div class="hero">
+    <div style="font-size:0.88rem;color:var(--sub);letter-spacing:3px;text-transform:uppercase;margin-bottom:0.8rem">✨ Create Magical Moments</div>
+    <h1><span class="grad">Surprizz</span><br/>for your loved ones 💝</h1>
+    <p>Beautiful password-protected surprises with AI, photos, music & more — share with one unique link!</p>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">50K+</div><div class="stat-label">Surprises Created</div></div>
+      <div class="stat"><div class="stat-num">9</div><div class="stat-label">Occasions</div></div>
+      <div class="stat"><div class="stat-num">Free</div><div class="stat-label">To Start</div></div>
+    </div>
+  </div>
+
+  <div class="mode-grid">
+    <div class="mode-card" onclick="selectMode('basic')" id="mc-basic" style="border-color:var(--pink)">
+      <div class="mode-icon">⚡</div><h2>Basic</h2>
+      <p>Quick surprise in 2 minutes!</p><div class="badge free">FREE</div>
+    </div>
+    <div class="mode-card" onclick="selectMode('advanced')" id="mc-advanced">
+      <div class="mode-icon">🎨</div><h2>Advanced</h2>
+      <p>Full custom — themes, music, more!</p><div class="badge pro">₹30 / 6 months</div>
+    </div>
+    <div class="mode-card" onclick="showPage('ai-page')" id="mc-ai">
+      <div class="mode-icon">🤖</div><h2>AI Guided</h2>
+      <p>Answer questions — AI builds it!</p><div class="badge ai">AI POWERED</div>
+    </div>
+  </div>
+
+  <div class="section-tabs">
+    <button class="stab active" onclick="switchHomeSection('occasions',this)">🎉 Occasions</button>
+    <button class="stab" onclick="switchHomeSection('templates',this)">📋 Templates</button>
+    <button class="stab" onclick="switchHomeSection('pricing',this)">💰 Pricing</button>
+  </div>
+
+  <div id="hs-occasions" style="padding:0 0 2rem">
+    <div class="section-title">Choose Your Occasion</div>
+    <div class="section-sub">Every moment deserves a special surprise ✨</div>
+    <div class="occasion-grid" id="occ-grid"></div>
+  </div>
+
+  <div id="hs-templates" style="display:none;padding:0 1rem 2rem">
+    <div class="section-title">Ready Templates</div>
+    <div class="section-sub">Pick one, personalize, done! ✨</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem;max-width:800px;margin:0 auto" id="template-grid"></div>
+  </div>
+
+  <div id="hs-pricing" style="display:none;padding:0 0 2rem">
+    <div class="section-title">Simple Pricing</div>
+    <div class="section-sub">Start free, upgrade when you need more ✨</div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Basic</h3>
+        <div class="price">Free <span>forever</span></div>
+        <ul class="price-features">
+          <li>1 slide per surprise</li>
+          <li>Up to 9 photos</li>
+          <li>Password protection</li>
+          <li>Unique shareable link</li>
+          <li>Caption & message</li>
+        </ul>
+        <button class="btn btn-secondary" style="width:100%" onclick="selectMode('basic');showPage('home-page')">Get Started Free</button>
+      </div>
+      <div class="price-card popular">
+        <div style="font-size:0.72rem;color:var(--pink);font-weight:700;margin-bottom:0.3rem">⭐ MOST POPULAR</div>
+        <h3>Advanced</h3>
+        <div class="price">₹30 <span>/ 6 months</span></div>
+        <ul class="price-features">
+          <li>Everything in Basic</li>
+          <li>Multiple slides</li>
+          <li>Photo frames & stickers</li>
+          <li>Background music</li>
+          <li>Collage maker</li>
+          <li>Scratch card reveal</li>
+          <li>Countdown timer</li>
+          <li>Wish wall</li>
+          <li>Voice messages</li>
+          <li>Q&A surprise</li>
+          <li>AI messages</li>
+        </ul>
+        <button class="btn btn-primary" style="width:100%" onclick="document.getElementById('pay-modal').style.display='flex'">Unlock Advanced</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Made with ❤️ by <a href="#">Surprizz</a> &nbsp;|&nbsp; <a href="#">Privacy</a> &nbsp;|&nbsp; <a href="#">Contact</a></footer>
+</div>
+
+<!-- ══ AI PAGE ══ -->
+<div id="ai-page" class="page">
+  <nav>
+    <div class="logo" onclick="showPage('home-page')">Surprizz 🎁</div>
+    <button class="nav-btn" onclick="showPage('home-page')">← Home</button>
+  </nav>
+  <div style="max-width:580px;margin:0 auto;padding:2rem 1rem 4rem">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-size:2.8rem">🤖</div>
+      <h2 style="font-size:1.4rem;margin:0.4rem 0">AI Surprise Builder</h2>
+      <p style="color:var(--sub);font-size:0.85rem">Answer questions — AI creates the perfect surprise!</p>
+    </div>
+    <div class="card" id="ai-card"></div>
+  </div>
+</div>
+
+<!-- ══ CREATOR ══ -->
+<div id="creator-page" class="page">
+  <nav>
+    <div class="logo" onclick="showPage('home-page')">Surprizz 🎁</div>
+    <button class="nav-btn" onclick="showPage('home-page')">← Home</button>
+  </nav>
+  <div class="creator-wrap">
+    <div class="creator-header">
+      <div id="creator-occ-icon" style="font-size:2.8rem;margin-bottom:0.4rem"></div>
+      <h2 id="creator-title" style="font-size:1.3rem;font-weight:800"></h2>
+      <p id="creator-sub" style="color:var(--sub);font-size:0.82rem;margin-top:0.2rem"></p>
+    </div>
+    <div class="ad-slot">📢 Advertisement</div>
+    <div class="steps-bar" id="steps-bar"></div>
+    <div class="card" id="creator-card"></div>
+    <div class="creator-attr">Made with <span style="color:var(--pink)">♥</span> using <span style="color:var(--pink)">Surprizz.com</span></div>
+  </div>
+</div>
+
+<!-- ══ VIEWER ══ -->
+<div id="viewer-page" class="page">
+  <button class="back-btn" onclick="showPage('home-page')">← Back</button>
+  <div id="viewer-inner"></div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="dashboard-page" class="page">
+  <nav>
+    <div class="logo" onclick="showPage('home-page')">Surprizz 🎁</div>
+    <button class="nav-btn" onclick="showPage('home-page')">← Home</button>
+  </nav>
+  <div style="text-align:center;padding:2rem 1rem 1rem">
+    <h2 style="font-size:1.4rem">My Surprises 🎁</h2>
+    <p style="color:var(--sub);font-size:0.82rem;margin-top:0.2rem">All your created surprises</p>
+  </div>
+  <div class="dash-grid" id="dash-grid"></div>
+</div>
+
+<input type="file" id="file-input" accept="image/*" style="display:none" multiple/>
+<input type="file" id="collage-input" accept="image/*" style="display:none"/>
+
+<script>
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
+const CONFIG = {
+  SUPABASE_URL: 'https://prauiodpoflbagjiwxoc.supabase.co',
+  SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByYXVpb2Rwb2ZsYmFnaml3eG9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MzYyMjksImV4cCI6MjA5NDUxMjIyOX0.VslyV2xBFfTYcsjJTBz4FjHCN2_atZaP2NhzG4h4uLI',
+  RAZORPAY_KEY: 'rzp_live_XXXXXXXXXXXXXXXX', // ← PASTE YOUR RAZORPAY KEY HERE
+  SITE_URL: window.location.origin,
+};
+
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const OCCASIONS=[
+  {id:"birthday",icon:"🎂",name:"Birthday",sub:"Celebrate their day",theme:"birthday"},
+  {id:"anniversary",icon:"💍",name:"Anniversary",sub:"Celebrate your love",theme:"anniversary"},
+  {id:"love",icon:"💕",name:"Love",sub:"Say it with heart",theme:"love"},
+  {id:"friendship",icon:"👫",name:"Friendship",sub:"Best friends forever",theme:"friendship"},
+  {id:"farewell",icon:"👋",name:"Farewell",sub:"A beautiful goodbye",theme:"farewell"},
+  {id:"congrats",icon:"🎉",name:"Congrats",sub:"Celebrate achievements",theme:"congrats"},
+  {id:"vehicle",icon:"🚗",name:"New Vehicle",sub:"New ride celebration",theme:"vehicle"},
+  {id:"opening",icon:"🏪",name:"Grand Opening",sub:"New beginnings",theme:"other"},
+  {id:"other",icon:"🌟",name:"Other",sub:"Any special moment",theme:"other"},
+];
+const THEMES=[
+  {id:"pink",bg:"linear-gradient(135deg,#ff6b9d,#ff9f43)",label:"Sunset"},
+  {id:"purple",bg:"linear-gradient(135deg,#c44dff,#4d96ff)",label:"Galaxy"},
+  {id:"gold",bg:"linear-gradient(135deg,#ffd93d,#ff6b9d)",label:"Golden"},
+  {id:"green",bg:"linear-gradient(135deg,#6bcb77,#4d96ff)",label:"Fresh"},
+  {id:"dark",bg:"linear-gradient(135deg,#1a1a2e,#16213e)",label:"Dark"},
+  {id:"rose",bg:"linear-gradient(135deg,#ff4d7d,#ff9f43)",label:"Rose"},
+];
+const FRAMES=[
+  {id:"none",icon:"⬜",label:"None"},{id:"hearts",icon:"💕",label:"Hearts"},
+  {id:"stars",icon:"⭐",label:"Stars"},{id:"flowers",icon:"🌸",label:"Flowers"},
+  {id:"gold",icon:"✨",label:"Glitter"},
+];
+const MUSIC_OPTIONS=[
+  {id:"none",icon:"🔇",label:"No Music"},{id:"happy",icon:"🎵",label:"Happy"},
+  {id:"romantic",icon:"💕",label:"Romantic"},{id:"birthday",icon:"🎂",label:"Birthday"},
+  {id:"party",icon:"🎉",label:"Party"},{id:"calm",icon:"🌊",label:"Calm"},
+];
+const TEMPLATES=[
+  {id:"t1",name:"Romantic Love",icon:"💕",occasion:"love",theme:"rose",title:"You Are My Everything 💕",subtitle:"A surprise just for you",revealMsg:"I Love You! 💝",slides:[{caption:"Our Story",story:"Every moment with you is magical ✨",photos:[]}]},
+  {id:"t2",name:"Birthday Blast",icon:"🎂",occasion:"birthday",theme:"pink",title:"Happy Birthday! 🎂",subtitle:"Your special day!",revealMsg:"SURPRISE!!! 🎉",slides:[{caption:"Wishing You",story:"May all your dreams come true! 🌟",photos:[]}]},
+  {id:"t3",name:"Best Friends",icon:"👫",occasion:"friendship",theme:"green",title:"You're My Best Friend! 👫",subtitle:"Forever and always",revealMsg:"BFF Surprise! 💚",slides:[{caption:"Our Friendship",story:"Thank you for being there always 💚",photos:[]}]},
+  {id:"t4",name:"Anniversary",icon:"💍",occasion:"anniversary",theme:"gold",title:"Happy Anniversary! 💍",subtitle:"Another year of us",revealMsg:"Still Falling For You 💛",slides:[{caption:"Our Journey",story:"Every day with you is a blessing 💛",photos:[]}]},
+  {id:"t5",name:"Farewell",icon:"👋",occasion:"farewell",theme:"purple",title:"Goodbye For Now 👋",subtitle:"You'll always be in our hearts",revealMsg:"We'll Miss You! 💜",slides:[{caption:"Memories",story:"Thank you for everything 💜",photos:[]}]},
+  {id:"t6",name:"Congrats",icon:"🎉",occasion:"congrats",theme:"gold",title:"Congratulations! 🎉",subtitle:"You did it!",revealMsg:"So Proud of You! 🌟",slides:[{caption:"Achievement",story:"You worked so hard for this 🌟",photos:[]}]},
+];
+const AI_QUESTIONS=[
+  {id:"q1",text:"Who is this surprise for?",options:["Girlfriend 💕","Boyfriend 💙","Best Friend 👫","Mom 👩","Dad 👨","Sibling 👶","Colleague 💼"]},
+  {id:"q2",text:"What is the occasion?",options:["Birthday 🎂","Anniversary 💍","Just Because 💕","Farewell 👋","Achievement 🏆","Apology 🙏","Miss You 💌"]},
+  {id:"q3",text:"Their personality?",options:["Romantic 💕","Funny 😂","Shy 🌸","Bold 🔥","Sweet 🍬","Adventurous 🌍"]},
+  {id:"q4",text:"How long have you known them?",options:["< 1 year","1-3 years","3-5 years","5+ years","Childhood friends","Family"]},
+  {id:"q5",text:"Tone of the surprise?",options:["Emotional 🥺","Funny 😂","Romantic 💕","Motivating 💪","Simple & Sweet 🌸","Grand 🎆"]},
+];
+const YESNO_QUESTIONS=[
+  "Do they love photos? 📸","Are they into music? 🎵","Do they like surprises? 🎁",
+  "Are they emotional? 🥺","Do they prefer simple things? 🌸","Are they romantic? 💕",
+  "Do they love celebrations? 🎉","Are they your best friend? 👫",
+];
+const AI_MESSAGES={
+  "Emotional 🥺":["Every time I think of you, my heart fills with gratitude. You are irreplaceable 🥺","Words can never express how much you mean to me. You are my everything 💝"],
+  "Funny 😂":["Happy surprise! You're officially my favourite person... most of the time 😂","I made this with love and also some mild panic. Happy surprise! 😂"],
+  "Romantic 💕":["You are the reason I smile every single day 💕 You make everything better just by being you.","Meeting you was the best thing that ever happened to me 💕"],
+  "Motivating 💪":["You have worked so hard to reach here. Every sacrifice was worth it. Keep going! 💪","Nothing can stop someone as determined as you. This is just the beginning! 🌟"],
+  "Simple & Sweet 🌸":["Just a little surprise to say — you matter to me more than you know 🌸","Thinking of you and wishing you all the happiness in the world 🌸"],
+  "Grand 🎆":["This moment deserves to be celebrated in the biggest way possible! You are EXTRAORDINARY 🎆","The world is a better place because you are in it. Today we celebrate YOU! 🎆"],
+};
+
+// ══════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════
+let APP={
+  user:null,
+  isPro:false,
+  mode:"basic",
+  occasion:null,
+  step:0,
+  activeSlide:0,
+  surprises:JSON.parse(localStorage.getItem("surprizz_v3")||"[]"),
+  current:freshCurrent(),
+  editId:null,
+  viewData:null,
+  viewPhase:"lock",
+  viewSlide:0,
+  aiAnswers:{},aiStep:0,
+  qnaAnswers:{},qnaIndex:0,
+  fileTarget:0,
+  mediaRecorder:null,audioChunks:[],isRecording:false,
+  shareLink:'',
+};
+
+function freshCurrent(){
+  return {
+    title:"",subtitle:"",password:"",revealMsg:"",revealSub:"",
+    closingTitle:"",closingMsg:"",creatorName:"",theme:"pink",
+    frame:"none",music:"none",countdownDate:"",scratchMsg:"",
+    slides:[{caption:"",story:"",photos:[]}],
+    wishWall:[],qnaList:[],collagePhotos:[],voiceBlob:null,
+  };
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+function toast(msg,dur=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  setTimeout(()=>t.style.display='none',dur);
+}
+
+// ══════════════════════════════════════
+// AUTH (Supabase stub — plug in real Supabase JS later)
+// ══════════════════════════════════════
+function showAuth(){document.getElementById('auth-overlay').style.display='flex';}
+function closeAuth(){document.getElementById('auth-overlay').style.display='none';}
+
+function loginGoogle(){
+  // REAL: supabase.auth.signInWithOAuth({provider:'google'})
+  simulateLogin('Google User','google@example.com');
+}
+
+function loginEmail(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pw=document.getElementById('auth-password').value.trim();
+  if(!email||!pw){document.getElementById('auth-err').textContent='Fill all fields!';return;}
+  if(pw.length<6){document.getElementById('auth-err').textContent='Password min 6 chars!';return;}
+  // REAL: supabase.auth.signInWithPassword({email,password:pw})
+  simulateLogin(email.split('@')[0],email);
+}
+
+function sendOTP(){
+  const phone=document.getElementById('auth-phone').value.trim();
+  if(!phone){document.getElementById('auth-err').textContent='Enter phone number!';return;}
+  // REAL: supabase.auth.signInWithOtp({phone})
+  document.getElementById('otp-section').style.display='block';
+  toast('OTP sent! (demo: use 123456)');
+}
+
+function verifyOTP(){
+  const otp=document.getElementById('auth-otp').value.trim();
+  const phone=document.getElementById('auth-phone').value.trim();
+  if(otp==='123456'||otp.length===6){
+    // REAL: supabase.auth.verifyOtp({phone,token:otp,type:'sms'})
+    simulateLogin('User',phone);
+  } else {
+    document.getElementById('auth-err').textContent='Wrong OTP!';
+  }
+}
+
+function simulateLogin(name,id){
+  APP.user={name,id};
+  closeAuth();
+  updateNavUser();
+  toast(`Welcome, ${name}! 🎉`);
+  // Check pro status from localStorage (replace with Supabase check)
+  APP.isPro=localStorage.getItem('surprizz_pro_'+id)==='true';
+}
+
+function updateNavUser(){
+  const area=document.getElementById('nav-user-area');
+  if(APP.user){
+    area.innerHTML=`
+      <div class="nav-user">
+        <div class="nav-avatar">${APP.user.name[0].toUpperCase()}</div>
+        <span>${APP.user.name.split(' ')[0]}</span>
+        ${APP.isPro?'<span style="color:var(--gold);font-size:0.7rem">👑 PRO</span>':''}
+        <button class="nav-btn" onclick="logout()" style="padding:0.3rem 0.6rem;font-size:0.75rem">Logout</button>
+      </div>`;
+  } else {
+    area.innerHTML=`<button class="nav-btn" onclick="showAuth()">Login / Sign Up</button>`;
+  }
+}
+
+function logout(){
+  APP.user=null;APP.isPro=false;updateNavUser();toast('Logged out!');
+}
+
+// ══════════════════════════════════════
+// PAYMENT — Razorpay
+// ══════════════════════════════════════
+function payRazorpay(){
+  if(!APP.user){showAuth();toast('Please login first!');return;}
+  // Load Razorpay script dynamically
+  const script=document.createElement('script');
+  script.src='https://checkout.razorpay.com/v1/checkout.js';
+  script.onload=()=>{
+    const options={
+      key:CONFIG.RAZORPAY_KEY,
+      amount:3000, // ₹30 in paise
+      currency:'INR',
+      name:'Surprizz',
+      description:'Advanced Access — 6 Months',
+      image:'',
+      handler:function(response){
+        // Payment success!
+        APP.isPro=true;
+        localStorage.setItem('surprizz_pro_'+APP.user.id,'true');
+        // REAL: Save to Supabase with expiry date
+        document.getElementById('pay-modal').style.display='none';
+        updateNavUser();
+        spawnConfetti();
+        toast('🎉 Advanced Unlocked for 6 months!',4000);
+      },
+      prefill:{email:APP.user?.id||'',contact:''},
+      theme:{color:'#ff6b9d'},
+      modal:{ondismiss:()=>toast('Payment cancelled')}
+    };
+    const rzp=new window.Razorpay(options);
+    rzp.open();
+  };
+  document.body.appendChild(script);
+}
+
+// ══════════════════════════════════════
+// UNIQUE LINK GENERATION
+// ══════════════════════════════════════
+function generateUniqueId(){
+  return Date.now().toString(36)+Math.random().toString(36).substr(2,6);
+}
+
+// ══════════════════════════════════════
+// SUPABASE API CALLS
+// ══════════════════════════════════════
+async function sbFetch(path, options={}){
+  const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${path}`, {
+    headers:{
+      'apikey': CONFIG.SUPABASE_KEY,
+      'Authorization': `Bearer ${CONFIG.SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
+      ...options.headers
+    },
+    ...options
+  });
+  return res;
+}
+
+async function saveToCloud(data){
+  const id = data.id || generateUniqueId();
+  data.id = id;
+
+  // Save to Supabase
+  try {
+    const res = await sbFetch('surprises', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ id, data })
+    });
+    if(!res.ok) throw new Error('Supabase error');
+  } catch(e) {
+    console.error('Cloud save failed:', e);
+    toast('⚠️ Cloud save failed — saved locally only');
+  }
+
+  // Also save locally as backup
+  const arr = APP.surprises.filter(s=>s.id!==id);
+  arr.unshift(data);
+  APP.surprises = arr;
+  localStorage.setItem('surprizz_v3', JSON.stringify(arr));
+
+  const link = `${CONFIG.SITE_URL}?s=${id}`;
+  return {id, link};
+}
+
+async function loadFromCloud(id){
+  try {
+    const res = await sbFetch(`surprises?id=eq.${id}&select=data`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if(!res.ok) throw new Error('Not found');
+    const rows = await res.json();
+    if(rows && rows.length > 0) return rows[0].data;
+  } catch(e) {
+    console.error('Cloud load failed:', e);
+  }
+  // Fallback to local
+  return APP.surprises.find(x=>x.id===id) || null;
+}
+
+async function loadFromLink(){
+  const params = new URLSearchParams(window.location.search);
+  const sid = params.get('s');
+  if(sid){
+    toast('Loading surprise... 💌', 3000);
+    const s = await loadFromCloud(sid);
+    if(s){
+      APP.viewData = s;
+      APP.viewPhase = 'lock';
+      APP.viewSlide = 0;
+      APP.qnaAnswers = {};
+      APP.qnaIndex = 0;
+      renderViewer();
+      showPage('viewer-page');
+    } else {
+      toast('❌ Surprise not found!', 3000);
+    }
+  }
+}
+
+// ══════════════════════════════════════
+// PAGES
+// ══════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='dashboard-page') renderDashboard();
+  if(id==='ai-page') renderAIPage();
+}
+
+function switchHomeSection(sec,btn){
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['occasions','templates','pricing'].forEach(s=>{
+    const el=document.getElementById('hs-'+s);
+    if(el) el.style.display=s===sec?'block':'none';
+  });
+}
+
+function renderOccasions(){
+  document.getElementById('occ-grid').innerHTML=OCCASIONS.map(o=>`
+    <div class="occ-card" onclick="startFromOccasion('${o.id}')">
+      <div class="occ-icon">${o.icon}</div>
+      <h3>${o.name}</h3><p>${o.sub}</p>
+    </div>`).join('');
+}
+
+function renderTemplates(){
+  document.getElementById('template-grid').innerHTML=TEMPLATES.map(t=>`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;cursor:pointer;transition:all 0.2s"
+      onmouseover="this.style.borderColor='var(--pink)'" onmouseout="this.style.borderColor=''"
+      onclick="useTemplate('${t.id}')">
+      <div style="font-size:2rem;margin-bottom:0.4rem">${t.icon}</div>
+      <h3 style="font-size:0.9rem;margin-bottom:0.2rem">${t.name}</h3>
+      <p style="font-size:0.73rem;color:var(--sub)">${t.title}</p>
+      <span class="badge free" style="margin-top:0.5rem">Use Template</span>
+    </div>`).join('');
+}
+
+function useTemplate(id){
+  const t=TEMPLATES.find(x=>x.id===id);if(!t) return;
+  APP.occasion=OCCASIONS.find(o=>o.id===t.occasion)||OCCASIONS[0];
+  APP.mode='advanced';resetCurrent();
+  Object.assign(APP.current,{title:t.title,subtitle:t.subtitle,revealMsg:t.revealMsg,
+    theme:t.theme,slides:t.slides.map(s=>({...s,photos:[]}))});
+  startCreator();
+}
+
+function selectMode(m){
+  if(m==='advanced'&&!APP.isPro){
+    document.getElementById('pay-modal').style.display='flex';return;
+  }
+  APP.mode=m;
+  document.querySelectorAll('.mode-card').forEach(c=>c.style.borderColor='');
+  const el=document.getElementById('mc-'+m);if(el) el.style.borderColor='var(--pink)';
+}
+
+function startFromOccasion(id){
+  APP.occasion=OCCASIONS.find(o=>o.id===id);
+  if(!APP.mode) APP.mode='basic';
+  if(APP.mode==='advanced'&&!APP.isPro){
+    document.getElementById('pay-modal').style.display='flex';return;
+  }
+  resetCurrent();startCreator();
+}
+
+function resetCurrent(){
+  APP.current=freshCurrent();APP.step=0;APP.editId=null;APP.activeSlide=0;
+}
+
+// ══════════════════════════════════════
+// AI PAGE
+// ══════════════════════════════════════
+function renderAIPage(){APP.aiStep=0;APP.aiAnswers={};renderAIStep();}
+
+function renderAIStep(){
+  const card=document.getElementById('ai-card');const s=APP.aiStep;
+  if(s<AI_QUESTIONS.length){
+    const q=AI_QUESTIONS[s];
+    card.innerHTML=`
+      <div style="margin-bottom:1rem">
+        <div style="font-size:0.72rem;color:var(--sub);letter-spacing:2px;text-transform:uppercase">Question ${s+1} of ${AI_QUESTIONS.length}</div>
+        <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin:0.4rem 0">
+          <div style="height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));width:${((s+1)/AI_QUESTIONS.length)*100}%;border-radius:2px;transition:width 0.4s"></div>
+        </div>
+      </div>
+      <h3 style="font-size:1.05rem;margin-bottom:1rem">${q.text}</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.4rem">
+        ${q.options.map(o=>`
+          <button onclick="selectAIAns('${q.id}','${o.replace(/'/g,"\\'")}',this)"
+            style="padding:0.45rem 0.9rem;border-radius:20px;border:1px solid var(--border);
+              background:transparent;color:var(--text);cursor:pointer;font-family:inherit;font-size:0.83rem;transition:all 0.2s">${o}</button>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        ${s>0?`<button class="btn btn-secondary" onclick="APP.aiStep--;renderAIStep()">← Back</button>`:'<div></div>'}
+        <button class="btn btn-primary" onclick="nextAIStep()">${s===AI_QUESTIONS.length-1?'Build My Surprise 🚀':'Next →'}</button>
+      </div>`;
+  } else {buildAISurprise();}
+}
+
+function selectAIAns(qid,val,btn){
+  APP.aiAnswers[qid]=val;
+  btn.parentElement.querySelectorAll('button').forEach(b=>{
+    b.style.background='transparent';b.style.color='var(--text)';b.style.borderColor='';
+  });
+  btn.style.background='linear-gradient(135deg,var(--pink),var(--purple))';
+  btn.style.color='#fff';btn.style.borderColor='transparent';
+}
+
+function nextAIStep(){APP.aiStep++;renderAIStep();}
+
+function buildAISurprise(){
+  const a=APP.aiAnswers;
+  const occ=OCCASIONS.find(o=>o.name.toLowerCase().includes((a.q2||'').split(' ')[0].toLowerCase()))||OCCASIONS[0];
+  APP.occasion=occ;APP.mode=APP.isPro?'advanced':'basic';resetCurrent();
+  const tone=a.q5||'Simple & Sweet 🌸';
+  const msgs=AI_MESSAGES[tone]||AI_MESSAGES['Simple & Sweet 🌸'];
+  const msg=msgs[Math.floor(Math.random()*msgs.length)];
+  const titles={
+    "Birthday 🎂":["Happy Birthday! 🎂","It's Your Special Day! 🎂"],
+    "Anniversary 💍":["Happy Anniversary! 💍","Another Year of Us 💍"],
+    "Just Because 💕":["Just For You 💕","Thinking of You 💕"],
+    "Farewell 👋":["Goodbye For Now 👋","We'll Miss You! 👋"],
+    "Achievement 🏆":["You Did It! 🏆","So Proud of You! 🌟"],
+    "Apology 🙏":["I'm Sorry 🙏","Forgive Me? 🙏"],
+    "Miss You 💌":["I Miss You So Much 💌","Wishing You Were Here 💌"],
+  };
+  const tarr=titles[a.q2||'']||["A Special Surprise For You 🎁"];
+  const title=tarr[Math.floor(Math.random()*tarr.length)];
+  APP.current.title=title;APP.current.revealMsg=title+' 🎉';
+  APP.current.revealSub='I created something special just for you 💌';
+  APP.current.closingTitle='Made With Love 💕';APP.current.closingMsg=msg;
+  APP.current.slides[0].story=msg;APP.current.slides[0].caption=title;
+  document.getElementById('ai-card').innerHTML=`
+    <div style="text-align:center">
+      <div style="font-size:2.8rem;margin-bottom:0.6rem">🎉</div>
+      <h3 style="font-size:1.1rem;margin-bottom:0.4rem;background:linear-gradient(90deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+        AI Built Your Surprise!</h3>
+      <div style="background:rgba(255,107,157,0.07);border:1px solid rgba(255,107,157,0.2);border-radius:12px;padding:1rem;margin:1rem 0;text-align:left;font-size:0.83rem">
+        <p style="margin:0 0 0.3rem">🎁 <b>${title}</b></p>
+        <p style="margin:0;color:var(--sub)">💌 AI message ready — customize with photos!</p>
+      </div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="startCreator()">Customize 🎨</button>
+        <button class="btn btn-secondary" onclick="renderAIPage()">↩ Redo</button>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════
+// CREATOR
+// ══════════════════════════════════════
+function getSteps(){
+  if(APP.mode==='basic') return ["Info","Photos","Finish"];
+  return ["Info","Memories","Style","Extras","Message","Finish"];
+}
+
+function startCreator(){
+  const occ=APP.occasion||OCCASIONS[0];
+  document.getElementById('creator-occ-icon').textContent=occ.icon;
+  document.getElementById('creator-title').textContent=`${occ.icon} ${occ.name} Surprise`;
+  document.getElementById('creator-sub').textContent=APP.mode==='basic'
+    ?"Quick & simple — 3 easy steps!":"Full customization — make it perfect!";
+  renderStep();showPage('creator-page');
+}
+
+function renderStep(){
+  renderStepsBar();
+  const card=document.getElementById('creator-card');
+  const s=APP.step;let html='';
+  if(APP.mode==='basic'){
+    if(s===0)html=renderBasicInfo();
+    if(s===1)html=renderPhotosStep();
+    if(s===2)html=renderFinishStep();
+  } else {
+    if(s===0)html=renderAdvancedInfo();
+    if(s===1)html=renderSlidesStep();
+    if(s===2)html=renderStyleStep();
+    if(s===3)html=renderExtrasStep();
+    if(s===4)html=renderMessageStep();
+    if(s===5)html=renderFinishStep();
+  }
+  card.innerHTML=html;
+  document.getElementById('file-input').onchange=handleFileChange;
+  document.getElementById('collage-input').onchange=handleCollageChange;
+}
+
+function renderStepsBar(){
+  const steps=getSteps();
+  document.getElementById('steps-bar').innerHTML=steps.map((s,i)=>`
+    <div class="step-item">
+      <div class="step-dot ${i<APP.step?'done':i===APP.step?'active':''}">${i<APP.step?'✓':i+1}</div>
+      <div class="step-label ${i===APP.step?'active':''}">${s}</div>
+      ${i<steps.length-1?`<div class="step-line ${i<APP.step?'done':''}"></div>`:''}</div>`).join('');
+}
+
+function renderBasicInfo(){
+  const c=APP.current;
+  return `<h3 style="margin-bottom:1rem;font-size:1rem">📝 Basic Info</h3>
+    <div class="ai-wrap"><h3>🤖 AI Title Suggestions</h3>
+      ${["Happy Birthday! 🎂","You Are My Everything 💕","Surprise! 🎉","We'll Miss You! 👋","So Proud of You! 🏆","You're My Best Friend! 👫"].map(s=>`
+        <span class="ai-chip" onclick="document.getElementById('f-title').value='${s}'">${s}</span>`).join('')}
+    </div>
+    <div class="field"><label>Title</label><input id="f-title" value="${esc(c.title)}" placeholder="e.g. Happy Birthday Priya! 🎂"/></div>
+    <div class="field"><label>Subtitle (optional)</label><input id="f-subtitle" value="${esc(c.subtitle)}" placeholder="e.g. You mean the world to me ✨"/></div>
+    <div class="field"><label>Your Name</label><input id="f-creator" value="${esc(c.creatorName)}" placeholder="e.g. Made by Ravi 💕"/></div>
+    <div class="field"><label>🔐 Password (receiver enters this)</label><input id="f-pw" type="text" value="${esc(c.password)}" placeholder="e.g. priya2025"/></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="showPage('home-page')">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next: Photos →</button>
+    </div>`;
+}
+
+function renderPhotosStep(){
+  const c=APP.current;const slide=c.slides[0];
+  return `<h3 style="margin-bottom:0.4rem;font-size:1rem">📸 Add Photos</h3>
+    <p style="color:var(--sub);font-size:0.78rem;margin-bottom:0.7rem">All formats — JPG · PNG · GIF · WEBP — shown full size!</p>
+    <div class="photo-grid" id="photo-grid-0">${renderPhotoGrid(0)}</div>
+    <div class="field" style="margin-top:0.8rem"><label>Caption</label>
+      <input id="f-caption-0" value="${esc(slide.caption)}" placeholder="e.g. Our best memories 💕"/></div>
+    <div class="field"><label>Message</label>
+      <textarea id="f-story-0" placeholder="Write something sweet…">${esc(slide.story)}</textarea></div>
+    <div class="ai-wrap"><h3>🤖 AI Message — click to use!</h3>
+      ${["Every moment with you is magical ✨","You make my world a better place 💕","Thank you for being in my life 🌟","You are irreplaceable to me 💝","Words cannot express how much you mean 🥺"].map(m=>`
+        <span class="ai-chip" onclick="document.getElementById('f-story-0').value='${m}'">${m.substring(0,32)}…</span>`).join('')}
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next: Finish →</button>
+    </div>`;
+}
+
+function renderAdvancedInfo(){
+  const c=APP.current;
+  return `<h3 style="margin-bottom:1rem;font-size:1rem">📝 Details</h3>
+    <div class="ai-wrap"><h3>🤖 AI Suggestions</h3>
+      ${["Happy Birthday! 🎂","You Are My Everything 💕","SURPRISE!!! 🎉","Happy Anniversary! 💍","Best Friend Forever 👫","Congratulations! 🏆"].map(s=>`
+        <span class="ai-chip" onclick="document.getElementById('f-title').value='${s}'">${s}</span>`).join('')}
+    </div>
+    <div class="field"><label>Title</label><input id="f-title" value="${esc(c.title)}" placeholder="e.g. Happy Birthday Priya! 🎂"/></div>
+    <div class="field"><label>Subtitle</label><input id="f-subtitle" value="${esc(c.subtitle)}" placeholder="e.g. You mean everything ✨"/></div>
+    <div class="field"><label>Your Name</label><input id="f-creator" value="${esc(c.creatorName)}" placeholder="e.g. With love, Ravi 💕"/></div>
+    <div class="field"><label>Reveal Message</label><input id="f-reveal" value="${esc(c.revealMsg)}" placeholder="e.g. SURPRISE!!! 🎉"/></div>
+    <div class="field"><label>Reveal Sub-text</label><input id="f-revealsub" value="${esc(c.revealSub)}" placeholder="e.g. I put together our best memories…"/></div>
+    <div class="field"><label>🔐 Password</label><input id="f-pw" type="text" value="${esc(c.password)}" placeholder="e.g. priya2025"/></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="showPage('home-page')">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next: Memories →</button>
+    </div>`;
+}
+
+function renderSlidesStep(){
+  const c=APP.current;const slides=c.slides;const ai=APP.activeSlide||0;const slide=slides[ai];
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.7rem">
+      <h3 style="font-size:1rem">📸 Memories</h3>
+      <button style="background:none;border:1px dashed rgba(255,150,180,0.3);color:var(--sub);padding:0.3rem 0.7rem;border-radius:20px;cursor:pointer;font-size:0.75rem;font-family:inherit" onclick="addSlide()">+ Slide</button>
+    </div>
+    <div class="slide-tabs">
+      ${slides.map((s,i)=>`
+        <button class="slide-tab ${i===ai?'active':''}" onclick="switchSlide(${i})">${s.photos.length?'📸':'🖼'} ${i+1}</button>
+        ${slides.length>1?`<span style="cursor:pointer;color:rgba(255,80,80,0.5);font-size:0.78rem;margin-right:3px" onclick="removeSlide(${i})">✕</span>`:''}`).join('')}
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:1rem;border:1px solid rgba(255,150,180,0.08)">
+      <p style="color:var(--sub);font-size:0.72rem;margin-bottom:0.4rem">Full photos — not cropped!</p>
+      <div class="photo-grid" id="photo-grid-${ai}">${renderPhotoGrid(ai)}</div>
+      <div class="field" style="margin-top:0.8rem"><label>Caption</label>
+        <input id="f-caption-${ai}" value="${esc(slide.caption)}" placeholder="e.g. The day we first met 💫"/></div>
+      <div class="field"><label>Story</label>
+        <textarea id="f-story-${ai}" placeholder="Write something sweet…">${esc(slide.story)}</textarea></div>
+      <div class="ai-wrap"><h3>🤖 AI Story</h3>
+        ${["Every moment with you is magical ✨","You make my world better 💕","Thank you for being in my life 🌟","You are irreplaceable 💝","No words can express how much you mean 🥺"].map(m=>`
+          <span class="ai-chip" onclick="document.getElementById('f-story-${ai}').value='${m}'">${m.substring(0,28)}…</span>`).join('')}
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next: Style →</button>
+    </div>`;
+}
+
+function renderStyleStep(){
+  const c=APP.current;
+  return `<h3 style="margin-bottom:1rem;font-size:1rem">🎨 Style</h3>
+    <div class="field"><label>Color Theme</label>
+      <div class="theme-grid">
+        ${THEMES.map(t=>`<div class="theme-opt ${c.theme===t.id?'selected':''}" style="background:${t.bg}" onclick="APP.current.theme='${t.id}';renderStep()"><span>${t.label}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="field"><label>Photo Frame</label>
+      <div class="frame-grid">
+        ${FRAMES.map(f=>`<div class="frame-opt ${c.frame===f.id?'selected':''}" onclick="APP.current.frame='${f.id}';renderStep()">${f.icon}<div style="font-size:0.55rem;color:var(--sub)">${f.label}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="field"><label>Background Music</label>
+      <div class="music-grid">
+        ${MUSIC_OPTIONS.map(m=>`<div class="music-opt ${c.music===m.id?'selected':''}" onclick="APP.current.music='${m.id}';renderStep()"><span style="font-size:1.2rem">${m.icon}</span><span style="font-size:0.82rem">${m.label}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next: Extras →</button>
+    </div>`;
+}
+
+function renderExtrasStep(){
+  const c=APP.current;
+  return `<h3 style="margin-bottom:1rem;font-size:1rem">✨ Extra Features</h3>
+
+    <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:1rem;border:1px solid rgba(255,150,180,0.08);margin-bottom:0.8rem">
+      <h4 style="font-size:0.85rem;margin-bottom:0.5rem">⏱️ Countdown Timer</h4>
+      <input type="datetime-local" id="f-countdown" value="${c.countdownDate||''}"
+        style="width:100%;padding:0.65rem;border-radius:10px;border:1px solid rgba(255,150,180,0.3);background:rgba(255,255,255,0.06);color:#ffeef5;outline:none;font-family:inherit"/>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:1rem;border:1px solid rgba(255,150,180,0.08);margin-bottom:0.8rem">
+      <h4 style="font-size:0.85rem;margin-bottom:0.5rem">🎴 Scratch Card</h4>
+      <input id="f-scratch" value="${esc(c.scratchMsg)}" placeholder="Hidden message revealed when scratched!"
+        style="width:100%;padding:0.65rem;border-radius:10px;border:1px solid rgba(255,150,180,0.3);background:rgba(255,255,255,0.06);color:#ffeef5;outline:none;font-family:inherit"/>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:1rem;border:1px solid rgba(255,150,180,0.08);margin-bottom:0.8rem">
+      <h4 style="font-size:0.85rem;margin-bottom:0.5rem">🎨 Photo Collage</h4>
+      <div id="collage-preview">${renderCollagePreview()}</div>
+      <button onclick="triggerCollage()" style="margin-top:0.5rem;padding:0.35rem 0.8rem;border-radius:20px;border:1px dashed rgba(255,107,157,0.4);background:transparent;color:var(--sub);cursor:pointer;font-size:0.78rem;font-family:inherit">+ Add Photo</button>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:1rem;border:1px solid rgba(255,150,180,0.08);margin-bottom:0.8rem">
+      <h4 style="font-size:0.85rem;margin-bottom:0.5rem">🎤 Voice Message</h4>
+      <div id="voice-controls">${renderVoiceControls()}</div>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:1rem;border:1px solid rgba(255,150,180,0.08);margin-bottom:0.8rem">
+      <h4 style="font-size:0.85rem;margin-bottom:0.5rem">👥 Wish Wall</h4>
+      <div id="wish-list">${renderWishList()}</div>
+      <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap">
+        <input id="wish-name" placeholder="Name" style="flex:1;min-width:80px;padding:0.45rem;border-radius:8px;border:1px solid rgba(255,150,180,0.3);background:rgba(255,255,255,0.06);color:#ffeef5;outline:none;font-family:inherit;font-size:0.8rem"/>
+        <input id="wish-msg" placeholder="Wish…" style="flex:2;min-width:120px;padding:0.45rem;border-radius:8px;border:1px solid rgba(255,150,180,0.3);background:rgba(255,255,255,0.06);color:#ffeef5;outline:none;font-family:inherit;font-size:0.8rem"/>
+        <button onclick="addWish()" style="padding:0.45rem 0.7rem;border-radius:8px;background:linear-gradient(135deg,var(--pink),var(--purple));border:none;color:#fff;cursor:pointer;font-size:0.78rem">Add</button>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:1rem;border:1px solid rgba(255,150,180,0.08);margin-bottom:0.8rem">
+      <h4 style="font-size:0.85rem;margin-bottom:0.6rem">❓ Q&A for Receiver</h4>
+      <p style="font-size:0.73rem;color:var(--sub);margin-bottom:0.6rem">Receiver answers these when opening the surprise!</p>
+      <div style="margin-bottom:0.6rem">
+        <p style="font-size:0.75rem;color:var(--gold);margin-bottom:0.4rem">🤖 Quick Add:</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.3rem">
+          ${YESNO_QUESTIONS.map(q=>`<span class="ai-chip" onclick="addYesNoQ('${q.replace(/'/g,"\\'")}')" style="font-size:0.72rem">+ ${q}</span>`).join('')}
+        </div>
+      </div>
+      <div id="qna-list">${renderQnaList()}</div>
+      <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap">
+        <input id="custom-q" placeholder="Your own question…" style="flex:1;min-width:150px;padding:0.45rem;border-radius:8px;border:1px solid rgba(255,150,180,0.3);background:rgba(255,255,255,0.06);color:#ffeef5;outline:none;font-family:inherit;font-size:0.8rem"/>
+        <select id="q-type" style="padding:0.45rem;border-radius:8px;border:1px solid rgba(255,150,180,0.3);background:rgba(30,10,50,0.95);color:#ffeef5;outline:none;font-family:inherit;font-size:0.78rem">
+          <option value="yesno">Yes/No</option>
+          <option value="text">Text</option>
+          <option value="rating">Rating ⭐</option>
+        </select>
+        <button onclick="addCustomQ()" style="padding:0.45rem 0.7rem;border-radius:8px;background:linear-gradient(135deg,var(--pink),var(--purple));border:none;color:#fff;cursor:pointer;font-size:0.78rem">Add</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Next: Message →</button>
+    </div>`;
+}
+
+function renderMessageStep(){
+  const c=APP.current;
+  return `<h3 style="margin-bottom:1rem;font-size:1rem">💌 Closing Message</h3>
+    <div class="ai-wrap"><h3>🤖 AI Closing — click to use!</h3>
+      ${["Made with all my love, just for you 💕","Every moment I spend with you is a treasure 🌟",
+        "You are the best thing that ever happened to me 💝","Thank you for being my person 🥺",
+        "No words can express how much you mean to me 💌"].map(m=>`
+        <span class="ai-chip" onclick="document.getElementById('f-cmsg').value='${m.replace(/'/g,"\\'")}'">${m.substring(0,33)}…</span>`).join('')}
+    </div>
+    <div class="field"><label>Closing Title</label><input id="f-ctitle" value="${esc(c.closingTitle)}" placeholder="e.g. Made with all my love 💕"/></div>
+    <div class="field"><label>Closing Message</label><textarea id="f-cmsg" placeholder="A final heartfelt message…">${esc(c.closingMsg)}</textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep()">Preview →</button>
+    </div>`;
+}
+
+function renderFinishStep(){
+  const c=APP.current;const occ=APP.occasion||OCCASIONS[0];
+  const photoCount=c.slides.reduce((a,s)=>a+s.photos.length,0);
+  return `<div style="text-align:center">
+    <div style="font-size:3rem;margin-bottom:0.5rem">${occ.icon}</div>
+    <h3 style="font-size:1.1rem;margin-bottom:0.3rem;background:linear-gradient(90deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+      ${c.title||'Your Surprise'} is Ready!</h3>
+    <div style="background:rgba(255,107,157,0.07);border:1px solid rgba(255,107,157,0.2);border-radius:12px;padding:1rem;margin:0.8rem 0;text-align:left;font-size:0.82rem">
+      <p style="margin:0 0 0.25rem">🎁 <b>${c.title||'(no title)'}</b></p>
+      <p style="margin:0 0 0.25rem;color:var(--sub)">${occ.icon} ${occ.name} · ${c.slides.length} slide${c.slides.length!==1?'s':''} · ${photoCount} photo${photoCount!==1?'s':''}</p>
+      <p style="margin:0 0 0.25rem;color:var(--sub)">🔐 Password: <b style="color:var(--gold)">${c.password||'(not set!)'}</b></p>
+      ${c.creatorName?`<p style="margin:0;color:var(--sub)">💕 By: <b>${c.creatorName}</b></p>`:''}
+    </div>
+    <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-secondary" onclick="prevStep()">← Edit</button>
+      <button class="btn btn-success" onclick="saveSurprise()">💾 Save & Get Link</button>
+      <button class="btn btn-primary" onclick="previewSurprise()">👁 Preview</button>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════
+// PHOTO GRID
+// ══════════════════════════════════════
+function renderPhotoGrid(idx){
+  const photos=APP.current.slides[idx]?.photos||[];
+  let html=photos.map((p,i)=>`
+    <div class="photo-slot"><img src="${p}" alt="photo"/>
+      <button class="remove-photo" onclick="removePhoto(${idx},${i})">✕</button></div>`).join('');
+  if(photos.length<9){
+    html+=`<div class="photo-slot" onclick="triggerPhoto(${idx})">
+      <div style="font-size:1.6rem;color:rgba(255,107,157,0.6)">📷</div>
+      <div style="font-size:0.6rem;color:var(--sub);margin-top:0.2rem">Add Photo</div></div>`;}
+  return html;
+}
+
+function renderCollagePreview(){
+  const p=APP.current.collagePhotos||[];
+  if(!p.length) return `<p style="font-size:0.78rem;color:var(--sub)">No collage photos yet</p>`;
+  return `<div class="collage-grid" style="grid-template-columns:repeat(${Math.min(p.length,3)},1fr);max-width:280px">
+    ${p.map((ph,i)=>`<div class="collage-cell" style="height:75px"><img src="${ph}"/>
+      <button onclick="removeCollagePhoto(${i})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.7);border:none;color:#fff;border-radius:50%;width:17px;height:17px;cursor:pointer;font-size:0.62rem">✕</button></div>`).join('')}
+  </div>`;
+}
+
+function renderVoiceControls(){
+  if(APP.current.voiceBlob){
+    return `<div style="display:flex;align-items:center;gap:0.5rem">
+      <audio controls src="${APP.current.voiceBlob}" style="height:30px;flex:1"></audio>
+      <button onclick="APP.current.voiceBlob=null;document.getElementById('voice-controls').innerHTML=renderVoiceControls()"
+        style="background:none;border:1px solid rgba(255,80,80,0.3);color:#ff7eb3;border-radius:20px;padding:0.25rem 0.5rem;cursor:pointer;font-size:0.72rem">✕</button></div>`;}
+  return `<button onclick="toggleRecording()" id="rec-btn"
+    style="padding:0.45rem 1rem;border-radius:20px;background:linear-gradient(135deg,var(--pink),var(--purple));border:none;color:#fff;cursor:pointer;font-size:0.82rem;font-family:inherit">
+    🎤 Start Recording</button>
+    <span id="rec-status" style="font-size:0.75rem;color:var(--sub);margin-left:0.5rem"></span>`;
+}
+
+function renderWishList(){
+  const w=APP.current.wishWall;
+  if(!w.length) return `<p style="font-size:0.78rem;color:var(--sub)">No wishes added yet</p>`;
+  return w.map((x,i)=>`
+    <div class="wish-card">
+      <div style="display:flex;justify-content:space-between">
+        <span class="wish-name">${esc(x.name)}</span>
+        <button onclick="removeWish(${i})" style="background:none;border:none;color:rgba(255,80,80,0.5);cursor:pointer;font-size:0.78rem">✕</button>
+      </div>
+      <div style="font-size:0.83rem;margin-top:0.2rem">${esc(x.msg)}</div>
+    </div>`).join('');
+}
+
+function renderQnaList(){
+  const l=APP.current.qnaList;
+  if(!l.length) return `<p style="font-size:0.78rem;color:var(--sub)">No questions yet</p>`;
+  return l.map((q,i)=>`
+    <div class="q-card">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div style="flex:1">
+          <span style="font-size:0.68rem;color:var(--sub);text-transform:uppercase">${q.type==='yesno'?'Yes/No':q.type==='rating'?'Rating':'Text'}</span>
+          <p style="font-size:0.85rem;margin-top:0.1rem">${esc(q.question)}</p>
+        </div>
+        <button onclick="removeQuestion(${i})" style="background:none;border:none;color:rgba(255,80,80,0.5);cursor:pointer;font-size:0.78rem;margin-left:0.4rem">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// EXTRAS ACTIONS
+// ══════════════════════════════════════
+function triggerCollage(){document.getElementById('collage-input').value='';document.getElementById('collage-input').click();}
+function handleCollageChange(e){
+  const f=e.target.files[0];if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{APP.current.collagePhotos.push(ev.target.result);const el=document.getElementById('collage-preview');if(el)el.innerHTML=renderCollagePreview();};
+  r.readAsDataURL(f);
+}
+function removeCollagePhoto(i){APP.current.collagePhotos.splice(i,1);const el=document.getElementById('collage-preview');if(el)el.innerHTML=renderCollagePreview();}
+
+async function toggleRecording(){
+  if(!APP.isRecording){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      APP.audioChunks=[];
+      APP.mediaRecorder=new MediaRecorder(stream);
+      APP.mediaRecorder.ondataavailable=e=>APP.audioChunks.push(e.data);
+      APP.mediaRecorder.onstop=()=>{
+        const blob=new Blob(APP.audioChunks,{type:'audio/webm'});
+        APP.current.voiceBlob=URL.createObjectURL(blob);
+        stream.getTracks().forEach(t=>t.stop());
+        const vc=document.getElementById('voice-controls');if(vc)vc.innerHTML=renderVoiceControls();
+      };
+      APP.mediaRecorder.start();APP.isRecording=true;
+      const btn=document.getElementById('rec-btn');const st=document.getElementById('rec-status');
+      if(btn){btn.textContent='⏹ Stop';btn.style.background='linear-gradient(135deg,#ff4444,#ff6b9d)';}
+      if(st)st.textContent='Recording…';
+    }catch(e){alert('Microphone access denied!');}
+  } else {APP.mediaRecorder?.stop();APP.isRecording=false;}
+}
+
+function addWish(){
+  const name=document.getElementById('wish-name')?.value?.trim();
+  const msg=document.getElementById('wish-msg')?.value?.trim();
+  if(!name||!msg) return;
+  APP.current.wishWall.push({name,msg});
+  document.getElementById('wish-name').value='';document.getElementById('wish-msg').value='';
+  const el=document.getElementById('wish-list');if(el)el.innerHTML=renderWishList();
+}
+function removeWish(i){APP.current.wishWall.splice(i,1);const el=document.getElementById('wish-list');if(el)el.innerHTML=renderWishList();}
+function addYesNoQ(q){APP.current.qnaList.push({question:q,type:'yesno',answer:null});const el=document.getElementById('qna-list');if(el)el.innerHTML=renderQnaList();}
+function addCustomQ(){
+  const q=document.getElementById('custom-q')?.value?.trim();
+  const type=document.getElementById('q-type')?.value||'yesno';
+  if(!q) return;
+  APP.current.qnaList.push({question:q,type,answer:null});
+  document.getElementById('custom-q').value='';
+  const el=document.getElementById('qna-list');if(el)el.innerHTML=renderQnaList();
+}
+function removeQuestion(i){APP.current.qnaList.splice(i,1);const el=document.getElementById('qna-list');if(el)el.innerHTML=renderQnaList();}
+
+// ══════════════════════════════════════
+// STEP NAV
+// ══════════════════════════════════════
+function saveFields(){
+  const c=APP.current;const s=APP.step;
+  const g=id=>{const el=document.getElementById(id);return el?el.value:''};
+  if(APP.mode==='basic'){
+    if(s===0){c.title=g('f-title');c.subtitle=g('f-subtitle');c.creatorName=g('f-creator');c.password=g('f-pw');}
+    if(s===1){c.slides[0].caption=g('f-caption-0');c.slides[0].story=g('f-story-0');}
+  } else {
+    if(s===0){c.title=g('f-title');c.subtitle=g('f-subtitle');c.creatorName=g('f-creator');c.revealMsg=g('f-reveal');c.revealSub=g('f-revealsub');c.password=g('f-pw');}
+    if(s===1){const ai=APP.activeSlide||0;c.slides[ai].caption=g(`f-caption-${ai}`);c.slides[ai].story=g(`f-story-${ai}`);}
+    if(s===3){c.countdownDate=g('f-countdown');c.scratchMsg=g('f-scratch');}
+    if(s===4){c.closingTitle=g('f-ctitle');c.closingMsg=g('f-cmsg');}
+  }
+}
+function nextStep(){saveFields();const steps=getSteps();if(APP.step<steps.length-1){APP.step++;renderStep();window.scrollTo(0,0);}}
+function prevStep(){saveFields();if(APP.step>0){APP.step--;renderStep();window.scrollTo(0,0);}}
+
+function triggerPhoto(idx){
+  APP.fileTarget=idx;
+  const inp=document.getElementById('file-input');inp.multiple=true;inp.value='';inp.click();
+}
+function handleFileChange(e){
+  const files=Array.from(e.target.files);if(!files.length) return;
+  const slide=APP.current.slides[APP.fileTarget];
+  const toLoad=files.slice(0,9-slide.photos.length);let loaded=0;
+  toLoad.forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{slide.photos.push(ev.target.result);loaded++;
+      if(loaded===toLoad.length){const g=document.getElementById(`photo-grid-${APP.fileTarget}`);if(g)g.innerHTML=renderPhotoGrid(APP.fileTarget);}};
+    r.readAsDataURL(f);
+  });e.target.value='';
+}
+function removePhoto(idx,i){APP.current.slides[idx].photos.splice(i,1);const g=document.getElementById(`photo-grid-${idx}`);if(g)g.innerHTML=renderPhotoGrid(idx);}
+function switchSlide(i){saveFields();APP.activeSlide=i;renderStep();}
+function addSlide(){saveFields();APP.current.slides.push({caption:'',story:'',photos:[]});APP.activeSlide=APP.current.slides.length-1;renderStep();}
+function removeSlide(i){if(APP.current.slides.length===1) return;APP.current.slides.splice(i,1);APP.activeSlide=Math.min(APP.activeSlide||0,APP.current.slides.length-1);renderStep();}
+
+// ══════════════════════════════════════
+// SAVE & SHARE
+// ══════════════════════════════════════
+async function saveSurprise(){
+  saveFields();
+  if(!APP.current.password.trim()){toast('⚠️ Please set a password!');return;}
+  const data={...APP.current,occasion:APP.occasion,mode:APP.mode,
+    createdAt:new Date().toISOString(),id:APP.editId||generateUniqueId()};
+  const {id,link}=await saveToCloud(data);
+  APP.editId=id;APP.shareLink=link;
+  showShareModal(link,APP.current.password);
+  spawnConfetti();
+}
+
+function showShareModal(link,pw){
+  document.getElementById('share-url-display').textContent=link;
+  document.getElementById('share-pw-display').textContent=pw;
+  document.getElementById('share-modal').style.display='flex';
+}
+
+function copyShareLink(){
+  navigator.clipboard.writeText(APP.shareLink).then(()=>toast('✅ Link copied!'));
+}
+
+function shareWhatsApp(){
+  const msg=`🎁 I made a surprise for you!\n\nOpen this link: ${APP.shareLink}\n\n🔐 Password: ${APP.current.password}\n\nMade with Surprizz 💝`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function previewSurprise(){
+  saveFields();
+  APP.viewData={...APP.current,occasion:APP.occasion};
+  APP.viewPhase='lock';APP.viewSlide=0;APP.qnaAnswers={};APP.qnaIndex=0;
+  renderViewer();showPage('viewer-page');
+}
+
+// ══════════════════════════════════════
+// VIEWER
+// ══════════════════════════════════════
+function renderViewer(){
+  const d=APP.viewData;const occ=d.occasion||OCCASIONS[0];
+  const tc='theme-'+(occ.theme||'birthday');
+  const inner=document.getElementById('viewer-inner');
+
+  if(APP.viewPhase==='lock'){
+    inner.innerHTML=`
+      <div class="vlock ${tc}">
+        ${d.countdownDate?`<div id="cd-display" style="padding:1rem 0"></div>`:''}
+        <div class="vlock-card">
+          <div style="font-size:3rem;margin-bottom:0.3rem">${occ.icon}</div>
+          <h2 style="font-size:1.2rem;margin:0.3rem 0 0.2rem">${d.title||'A Surprise'}</h2>
+          <p style="color:var(--sub);font-size:0.83rem;margin-bottom:1rem">${d.subtitle||'Made just for you ✨'}</p>
+          <input class="pw-input" id="v-pw" type="password" placeholder="Enter password…" onkeydown="if(event.key==='Enter')tryUnlock()"/>
+          <div id="v-err" class="err"></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:0.8rem" onclick="tryUnlock()">Open Surprise 💝</button>
+          ${d.creatorName?`<div style="margin-top:0.8rem;font-size:0.78rem;color:var(--sub)">💕 ${d.creatorName}</div>`:''}
+        </div>
+      </div>`;
+    if(d.countdownDate) startCountdown(d.countdownDate,'cd-display');
+    return;
+  }
+
+  if(APP.viewPhase==='qna'&&d.qnaList?.length){renderQnaViewer();return;}
+
+  if(APP.viewPhase==='reveal'){
+    inner.innerHTML=`
+      <div class="${tc}" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem">
+        <div style="font-size:4.5rem;margin-bottom:0.5rem">🎉</div>
+        <h1 style="font-size:clamp(1.8rem,6vw,3rem);font-weight:900;color:#ffd6e7;margin:0 0 0.7rem">${d.revealMsg||d.title||'Surprise!!!'}</h1>
+        <p style="color:rgba(255,200,220,0.8);max-width:420px;line-height:1.7;font-size:0.92rem">${d.revealSub||'Click below to see what\'s waiting 💌'}</p>
+        <button class="btn btn-primary" style="margin-top:1.4rem" onclick="startSlides()">Let's Go ✨</button>
+        ${d.creatorName?`<div style="margin-top:1rem;font-size:0.8rem;color:rgba(255,200,220,0.5)">💕 ${d.creatorName}</div>`:''}
+      </div>`;
+    spawnConfetti();return;
+  }
+
+  if(APP.viewPhase==='slides'){
+    const slides=d.slides||[];const idx=APP.viewSlide;const slide=slides[idx]||{};
+    const photos=slide.photos||[];const progress=((idx+1)/slides.length)*100;
+    let ps='';
+    if(photos.length===1)ps='width:min(88vw,480px);max-height:380px';
+    else if(photos.length===2)ps='width:min(40vw,200px);height:min(40vw,200px)';
+    else ps='width:min(26vw,145px);height:min(26vw,145px)';
+    const fs=getFrameStyle(d.frame||'none');
+    inner.innerHTML=`
+      <div class="${tc} slide-view">
+        <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+        <div class="slide-content">
+          ${photos.length?`<div class="slide-photos">
+            ${photos.map(p=>`<div class="slide-photo-wrap" style="${ps};${fs}">
+              <img src="${p}" style="width:100%;height:100%;object-fit:${photos.length===1?'contain':'cover'}" alt="memory"/></div>`).join('')}
+          </div>`:''}
+          <p style="color:rgba(255,200,220,0.4);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:0.4rem">Memory ${idx+1} of ${slides.length}</p>
+          ${slide.caption?`<h2 style="color:#ffd6e7;font-size:clamp(1.1rem,3.5vw,1.6rem);margin:0 0 0.5rem;max-width:480px;line-height:1.3">${slide.caption}</h2>`:''}
+          ${slide.story?`<p style="color:rgba(255,200,220,0.8);font-size:0.9rem;max-width:480px;line-height:1.8;margin:0 0 1rem">${slide.story}</p>`:''}
+          <div style="display:flex;gap:0.5rem">
+            ${idx>0?`<button class="btn btn-secondary" onclick="navSlide(-1)">← Back</button>`:''}
+            ${idx<slides.length-1
+              ?`<button class="btn btn-primary" onclick="navSlide(1)">Next →</button>`
+              :`<button class="btn btn-gold" onclick="goExtras()">Finish 🎊</button>`}
+          </div>
+        </div>
+        <div class="creator-attr">Made with <span style="color:var(--pink)">♥</span> using <span style="color:var(--pink)">Surprizz.com</span>${d.creatorName?' · '+d.creatorName:''}</div>
+      </div>`;
+    return;
+  }
+
+  if(APP.viewPhase==='extras'){renderExtrasViewer();return;}
+
+  if(APP.viewPhase==='end'){
+    inner.innerHTML=`
+      <div class="${tc}" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem">
+        <div style="font-size:3.5rem;margin-bottom:0.5rem">💝</div>
+        <h1 style="font-size:clamp(1.4rem,4.5vw,2.4rem);color:#ffd6e7;margin:0 0 0.7rem">${d.closingTitle||'Made with Love 💕'}</h1>
+        <p style="color:rgba(255,200,220,0.8);max-width:420px;line-height:1.8;font-size:0.9rem">${d.closingMsg||'Every moment with you is a treasure 🌟'}</p>
+        ${d.creatorName?`<div style="margin-top:0.7rem;font-size:0.85rem;color:rgba(255,200,220,0.6)">💕 ${d.creatorName}</div>`:''}
+        <button class="btn btn-secondary" style="margin-top:1.2rem" onclick="APP.viewSlide=0;APP.viewPhase='slides';renderViewer()">↩ Watch Again</button>
+        <div class="creator-attr" style="margin-top:1.5rem">Made with <span style="color:var(--pink)">♥</span> using <span style="color:var(--pink)">Surprizz.com</span></div>
+      </div>`;
+    spawnConfetti();return;
+  }
+}
+
+function getFrameStyle(frame){
+  const s={
+    hearts:'box-shadow:0 0 0 4px #ff6b9d,0 0 0 8px rgba(255,107,157,0.3)',
+    stars:'box-shadow:0 0 0 4px #ffd93d,0 0 0 8px rgba(255,217,61,0.3)',
+    flowers:'box-shadow:0 0 0 4px #ff9f43,0 0 0 8px rgba(255,159,67,0.3)',
+    gold:'box-shadow:0 0 0 4px #ffd93d,0 0 15px rgba(255,217,61,0.5)',
+  };
+  return s[frame]||'';
+}
+
+function renderExtrasViewer(){
+  const d=APP.viewData;const tc='theme-'+(d.occasion?.theme||'birthday');
+  let sec='';
+  if(d.collagePhotos?.length){
+    sec+=`<div style="margin-bottom:1.5rem;text-align:center">
+      <h3 style="color:var(--pink);margin-bottom:0.7rem">🎨 Photo Collage</h3>
+      <div class="collage-grid" style="grid-template-columns:repeat(${Math.min(d.collagePhotos.length,3)},1fr);max-width:300px;margin:0 auto">
+        ${d.collagePhotos.map(p=>`<div class="collage-cell" style="height:90px"><img src="${p}"/></div>`).join('')}
+      </div></div>`;}
+  if(d.voiceBlob){
+    sec+=`<div style="margin-bottom:1.5rem;text-align:center">
+      <h3 style="color:var(--pink);margin-bottom:0.7rem">🎤 Voice Message</h3>
+      <audio controls src="${d.voiceBlob}" style="width:100%;max-width:280px"></audio></div>`;}
+  if(d.scratchMsg){
+    sec+=`<div style="margin-bottom:1.5rem;text-align:center">
+      <h3 style="color:var(--pink);margin-bottom:0.7rem">🎴 Scratch Card</h3>
+      <div id="scratch-wrap" style="position:relative;display:inline-block;border-radius:14px;overflow:hidden;cursor:crosshair">
+        <div style="padding:1.5rem 2.5rem;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;text-align:center;font-size:1.05rem;font-weight:700;border-radius:14px;min-width:200px">${esc(d.scratchMsg)}</div>
+        <canvas id="scratch-canvas" style="position:absolute;top:0;left:0;cursor:crosshair;border-radius:14px"></canvas>
+      </div></div>`;}
+  if(d.wishWall?.length){
+    sec+=`<div style="margin-bottom:1.5rem">
+      <h3 style="color:var(--pink);margin-bottom:0.7rem;text-align:center">👥 Wish Wall</h3>
+      ${d.wishWall.map(w=>`<div class="wish-card"><div class="wish-name">${esc(w.name)} 💕</div><div style="font-size:0.83rem;margin-top:0.2rem">${esc(w.msg)}</div></div>`).join('')}</div>`;}
+  if(APP.qnaAnswers&&Object.keys(APP.qnaAnswers).length){
+    sec+=`<div style="margin-bottom:1.5rem">
+      <h3 style="color:var(--pink);margin-bottom:0.7rem;text-align:center">❓ Your Answers</h3>
+      ${d.qnaList.map((q,i)=>`<div class="q-card">
+        <p style="font-size:0.83rem;margin-bottom:0.2rem">${esc(q.question)}</p>
+        <p style="color:var(--gold);font-size:0.85rem;font-weight:600">${APP.qnaAnswers[i]||'—'}</p></div>`).join('')}</div>`;}
+  if(!sec){goEnd();return;}
+  document.getElementById('viewer-inner').innerHTML=`
+    <div class="${tc}" style="min-height:100vh;padding:2rem 1rem">
+      <div style="max-width:500px;margin:0 auto">
+        ${sec}
+        <div style="text-align:center;margin-top:1rem">
+          <button class="btn btn-gold" onclick="goEnd()">Closing Message 💝</button>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(initScratch,200);
+}
+
+function initScratch(){
+  const wrap=document.getElementById('scratch-wrap');
+  const canvas=document.getElementById('scratch-canvas');
+  if(!wrap||!canvas) return;
+  canvas.width=wrap.offsetWidth;canvas.height=wrap.offsetHeight;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#a0a0b0';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.font='bold 14px Segoe UI';ctx.fillStyle='#777';ctx.textAlign='center';
+  ctx.fillText('🎴 Scratch Me!',canvas.width/2,canvas.height/2);
+  let drawing=false;
+  const scratch=(x,y)=>{ctx.globalCompositeOperation='destination-out';ctx.beginPath();ctx.arc(x,y,22,0,Math.PI*2);ctx.fill();};
+  canvas.addEventListener('mousedown',e=>{drawing=true;const r=canvas.getBoundingClientRect();scratch(e.clientX-r.left,e.clientY-r.top);});
+  canvas.addEventListener('mousemove',e=>{if(!drawing) return;const r=canvas.getBoundingClientRect();scratch(e.clientX-r.left,e.clientY-r.top);});
+  canvas.addEventListener('mouseup',()=>drawing=false);
+  canvas.addEventListener('touchstart',e=>{drawing=true;const r=canvas.getBoundingClientRect();const t=e.touches[0];scratch(t.clientX-r.left,t.clientY-r.top);e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchmove',e=>{if(!drawing) return;const r=canvas.getBoundingClientRect();const t=e.touches[0];scratch(t.clientX-r.left,t.clientY-r.top);e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchend',()=>drawing=false);
+}
+
+function renderQnaViewer(){
+  const d=APP.viewData;const tc='theme-'+(d.occasion?.theme||'birthday');
+  const list=d.qnaList||[];
+  if(APP.qnaIndex>=list.length){goExtras();return;}
+  const q=list[APP.qnaIndex];
+  document.getElementById('viewer-inner').innerHTML=`
+    <div class="${tc}" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem">
+      <div style="max-width:380px;width:100%;text-align:center">
+        <p style="color:var(--sub);font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.4rem">Question ${APP.qnaIndex+1} of ${list.length}</p>
+        <div style="height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin-bottom:1.2rem">
+          <div style="height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));width:${((APP.qnaIndex+1)/list.length)*100}%;border-radius:2px"></div>
+        </div>
+        <h2 style="font-size:1.1rem;color:#ffd6e7;margin-bottom:1.3rem">${esc(q.question)}</h2>
+        ${q.type==='yesno'?`<div class="q-yesno"><button class="btn-yes" onclick="answerQna(${APP.qnaIndex},'Yes ✅')">Yes ✅</button><button class="btn-no" onclick="answerQna(${APP.qnaIndex},'No ❌')">No ❌</button></div>`:''}
+        ${q.type==='text'?`<input id="qna-ans" placeholder="Type your answer…" style="width:100%;padding:0.75rem;border-radius:10px;border:1px solid rgba(255,150,180,0.4);background:rgba(255,255,255,0.08);color:#fff;font-size:1rem;outline:none;text-align:center;font-family:inherit;margin-bottom:0.7rem"/>
+          <button class="btn btn-primary" style="width:100%" onclick="answerQna(${APP.qnaIndex},document.getElementById('qna-ans').value||'—')">Next →</button>`:''}
+        ${q.type==='rating'?`<div style="display:flex;gap:0.5rem;justify-content:center">
+          ${[1,2,3,4,5].map(n=>`<button onclick="answerQna(${APP.qnaIndex},'${n} ⭐')"
+            style="width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);background:transparent;color:var(--gold);font-size:1rem;cursor:pointer;font-weight:700;font-family:inherit;transition:all 0.2s"
+            onmouseover="this.style.background='var(--gold)';this.style.color='#1a0533'"
+            onmouseout="this.style.background='transparent';this.style.color='var(--gold)'">${n}</button>`).join('')}
+        </div>`:''}
+      </div>
+    </div>`;
+}
+
+function answerQna(idx,val){
+  APP.qnaAnswers[idx]=val;APP.qnaIndex++;renderQnaViewer();
+}
+
+function startCountdown(dateStr,elId){
+  const target=new Date(dateStr);
+  function update(){
+    const el=document.getElementById(elId);if(!el) return;
+    const diff=target-new Date();
+    if(diff<=0){el.innerHTML='<div style="color:var(--gold);font-weight:700;text-align:center;padding:0.5rem">🎉 The moment is here!</div>';return;}
+    const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),
+      m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    el.innerHTML=`<div class="countdown-wrap">
+      ${[['Days',d],['Hrs',h],['Min',m],['Sec',s]].map(([l,v])=>`
+        <div class="cd-unit"><div class="cd-num">${String(v).padStart(2,'0')}</div><div class="cd-label">${l}</div></div>`).join('')}
+    </div>`;
+    setTimeout(update,1000);
+  }update();
+}
+
+function tryUnlock(){
+  const inp=document.getElementById('v-pw');const err=document.getElementById('v-err');if(!inp) return;
+  if(inp.value===APP.viewData.password){
+    if(APP.viewData.qnaList?.length){APP.viewPhase='qna';APP.qnaIndex=0;APP.qnaAnswers={};}
+    else APP.viewPhase='reveal';
+    renderViewer();
+  } else {err.textContent='Wrong password 😢';inp.value='';}
+}
+function startSlides(){APP.viewPhase='slides';APP.viewSlide=0;renderViewer();}
+function navSlide(dir){APP.viewSlide+=dir;renderViewer();window.scrollTo(0,0);}
+function goExtras(){
+  const d=APP.viewData;
+  if(d.collagePhotos?.length||d.voiceBlob||d.scratchMsg||d.wishWall?.length||Object.keys(APP.qnaAnswers||{}).length){
+    APP.viewPhase='extras';renderViewer();
+  } else goEnd();
+}
+function goEnd(){APP.viewPhase='end';renderViewer();spawnConfetti();}
+
+// ══════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════
+function renderDashboard(){
+  const grid=document.getElementById('dash-grid');const arr=APP.surprises;
+  if(!arr.length){
+    grid.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--sub);grid-column:1/-1">
+      No surprises yet!<br/><button class="btn btn-primary" style="margin-top:1rem" onclick="showPage('home-page')">Create One 🎁</button></div>`;
+    return;
+  }
+  grid.innerHTML=arr.map(s=>`
+    <div class="dash-card">
+      <div style="font-size:1.8rem;margin-bottom:0.3rem">${s.occasion?.icon||'🎁'}</div>
+      <h3 style="font-size:0.92rem;margin-bottom:0.2rem">${s.title||'Untitled'}</h3>
+      <p style="font-size:0.73rem;color:var(--sub)">${s.occasion?.name||'Surprise'} · ${s.slides?.length||1} slide${(s.slides?.length||1)!==1?'s':''}</p>
+      <p style="color:var(--gold);font-size:0.75rem;margin-top:0.15rem">🔐 ${s.password||'no password'}</p>
+      ${s.creatorName?`<p style="font-size:0.7rem;color:var(--sub);margin-top:0.1rem">💕 ${s.creatorName}</p>`:''}
+      <div class="dash-actions">
+        <button class="dash-btn btn-primary btn" onclick="viewSaved('${s.id}')">👁 View</button>
+        <button class="dash-btn btn" style="background:rgba(107,203,119,0.15);color:var(--green);border:1px solid var(--green)" onclick="shareFromDash('${s.id}')">🔗 Share</button>
+        <button class="dash-btn btn-secondary btn" onclick="editSaved('${s.id}')">✏️ Edit</button>
+        <button class="dash-btn btn" style="background:rgba(255,80,80,0.15);color:#ff7eb3;border:1px solid rgba(255,80,80,0.3)" onclick="deleteSaved('${s.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function shareFromDash(id){
+  const s=APP.surprises.find(x=>x.id===id);if(!s) return;
+  APP.shareLink=`${CONFIG.SITE_URL}?s=${id}`;
+  showShareModal(APP.shareLink,s.password);
+}
+
+function viewSaved(id){
+  const s=APP.surprises.find(x=>x.id===id);if(!s) return;
+  APP.viewData=s;APP.viewPhase='lock';APP.viewSlide=0;APP.qnaAnswers={};APP.qnaIndex=0;
+  renderViewer();showPage('viewer-page');
+}
+
+function editSaved(id){
+  const s=APP.surprises.find(x=>x.id===id);if(!s) return;
+  APP.current={...s};APP.occasion=s.occasion;APP.mode=s.mode||'basic';
+  APP.editId=id;APP.step=0;APP.activeSlide=0;startCreator();
+}
+
+function deleteSaved(id){
+  if(!confirm('Delete this surprise?')) return;
+  APP.surprises=APP.surprises.filter(s=>s.id!==id);
+  localStorage.setItem('surprizz_v3',JSON.stringify(APP.surprises));
+  renderDashboard();
+}
+
+// ══════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════
+function spawnConfetti(){
+  const wrap=document.createElement('div');wrap.className='confetti-wrap';
+  const colors=['#ff6b9d','#ffd93d','#6bcb77','#4d96ff','#c77dff'];
+  for(let i=0;i<50;i++){
+    const p=document.createElement('div');p.className='conf-piece';
+    const size=6+Math.random()*8;
+    p.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;
+      background:${colors[i%5]};border-radius:${i%2?'50%':'2px'};
+      animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*1.5}s;`;
+    wrap.appendChild(p);
+  }
+  document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),6000);
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+renderOccasions();
+renderTemplates();
+document.getElementById('hs-templates').style.display='none';
+document.getElementById('hs-pricing').style.display='none';
+document.getElementById('mc-basic').style.borderColor='var(--pink)';
+loadFromLink(); // Check if opened from a shared link
+</script>
+</body>
+</html>
